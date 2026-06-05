@@ -39,6 +39,20 @@ flutter pub get
 flutter run -d chrome  # or ios / android / macos / windows
 \`\`\`
 
+### 5. Vercel Deployment
+PaperMeet is configured for Vercel deployment (Frontend + API).
+- **Frontend**: Flutter Web must be built locally or in CI before pushing to Vercel.
+  ```bash
+  cd frontend
+  flutter build web --release
+  ```
+- **API**: The Node.js backend is served via Vercel Serverless Functions.
+- **Important**: Socket.IO/WebRTC signaling requires a persistent server. While the REST API works on Vercel, for full meeting functionality, use the Docker/Kubernetes setup provided in `/deployment`.
+
+To deploy to Vercel:
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run `vercel` in the root directory.
+
 ## 🧠 Architecture Highlights
 - **Authentication**: JWT, Email, with RBAC.
 - **Database**: PostgreSQL (relational) + Redis (signaling/pub-sub).
