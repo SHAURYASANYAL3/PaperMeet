@@ -95,7 +95,7 @@ class _MeetingScreenState extends ConsumerState<MeetingScreen> {
       backgroundColor: color,
       child: IconButton(
         icon: Icon(icon, color: Colors.white),
-        onSize: 30,
+        iconSize: 30,
         onPressed: onPressed,
       ),
     );

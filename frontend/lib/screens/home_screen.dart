@@ -25,7 +25,7 @@ class HomeScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'Today\\'s Meetings',
+                "Today's Meetings",
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,

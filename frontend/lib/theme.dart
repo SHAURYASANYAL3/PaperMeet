@@ -38,7 +38,7 @@ class NotebookTheme {
           foregroundColor: pencilDark,
           elevation: 0,
           side: const BorderSide(color: pencilDark, width: 2),
-          shape: RoundedRectangleBinding(
+          shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(4),
           ),
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
