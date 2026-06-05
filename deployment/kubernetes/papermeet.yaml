@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papermeet-backend
+  labels:
+    app: papermeet-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: papermeet-backend
+  template:
+    metadata:
+      labels:
+        app: papermeet-backend
+    spec:
+      containers:
+      - name: backend
+        image: papermeet-backend:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: database_url
+        - name: REDIS_URL
+          value: "redis://papermeet-redis:6379"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: papermeet-backend
+spec:
+  selector:
+    app: papermeet-backend
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papermeet-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: papermeet-ai
+  template:
+    metadata:
+      labels:
+        app: papermeet-ai
+    spec:
+      containers:
+      - name: ai-service
+        image: papermeet-ai:latest
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: papermeet-ai
+spec:
+  selector:
+    app: papermeet-ai
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000

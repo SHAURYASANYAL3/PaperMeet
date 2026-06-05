@@ -1,0 +1,41 @@
+name: PaperMeet CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+    - run: cd backend && npm install
+    - run: cd backend && npx prisma generate
+    - run: cd backend && npm run build
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.19.0'
+    - run: cd frontend && flutter pub get
+    - run: cd frontend && flutter analyze || true
+
+  build-and-push-docker:
+    needs: [test-backend, test-frontend]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build Backend
+      run: docker build -t papermeet-backend:latest ./backend
+    - name: Build AI Service
+      run: docker build -t papermeet-ai:latest ./ai-services
+    # Add push steps to Docker Hub or ECR here

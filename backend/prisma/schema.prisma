@@ -1,0 +1,167 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String?   @unique
+  phone         String?   @unique
+  name          String
+  avatarUrl     String?
+  role          Role      @default(USER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  meetingsHost  Meeting[] @relation("HostMeetings")
+  participations Participant[]
+  notes         Note[]
+  chatMessages  ChatMessage[]
+  focusReports  FocusReport[]
+  devices       Device[]
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Device {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deviceId    String   @unique
+  deviceType  String
+  trusted     Boolean  @default(false)
+  lastSeen    DateTime @default(now())
+}
+
+model Meeting {
+  id          String    @id @default(uuid())
+  meetId      String    @unique
+  title       String
+  type        MeetingType
+  hostId      String
+  host        User      @relation("HostMeetings", fields: [hostId], references: [id])
+  status      MeetingStatus @default(SCHEDULED)
+  scheduledFor DateTime?
+  startedAt   DateTime?
+  endedAt     DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  participants Participant[]
+  transcripts  Transcript[]
+  notes        Note[]
+  chatMessages ChatMessage[]
+  focusReports FocusReport[]
+  aiActions    AiAction[]
+}
+
+enum MeetingType {
+  PRIVATE
+  TEAM
+  CLASSROOM
+  INTERVIEW
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  ONGOING
+  ENDED
+  CANCELLED
+}
+
+model Participant {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meetingId   String
+  meeting     Meeting   @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  joinedAt    DateTime  @default(now())
+  leftAt      DateTime?
+  role        ParticipantRole @default(ATTENDEE)
+  
+  @@unique([userId, meetingId])
+}
+
+enum ParticipantRole {
+  HOST
+  CO_HOST
+  ATTENDEE
+}
+
+model Transcript {
+  id          String   @id @default(uuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  content     String   @db.Text
+  speakerId   String?
+  timestamp   DateTime
+  createdAt   DateTime @default(now())
+}
+
+model Note {
+  id          String   @id @default(uuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String   @db.Text
+  isPrivate   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ChatMessage {
+  id          String   @id @default(uuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content     String   @db.Text
+  isSpam      Boolean  @default(false)
+  isImportant Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model FocusReport {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  meetingId     String
+  meeting       Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  focusScore    Float    // 0 to 100
+  tabSwitches   Int      @default(0)
+  absenceCount  Int      @default(0)
+  timestamp     DateTime @default(now())
+}
+
+model AiAction {
+  id          String   @id @default(uuid())
+  meetingId   String
+  meeting     Meeting  @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  type        AiActionType
+  content     String   @db.Text
+  status      ActionStatus @default(PENDING)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum AiActionType {
+  SUMMARY
+  ACTION_ITEM
+  DECISION
+  DEADLINE
+  FOLLOW_UP
+}
+
+enum ActionStatus {
+  PENDING
+  COMPLETED
+  DISMISSED
+}

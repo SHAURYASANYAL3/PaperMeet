@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "public": true,
+  "name": "papermeet",
+  "builds": [
+    {
+      "src": "frontend/pubspec.yaml",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "frontend/build/web"
+      }
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/build/web/index.html"
+    }
+  ]
+}
