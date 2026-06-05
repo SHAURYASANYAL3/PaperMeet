@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "papermeet",
   "builds": [
     {
       "src": "backend/api/index.ts",
@@ -14,16 +13,27 @@
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/api/index.ts"
+      "dest": "/backend/api/index.ts"
+    },
+    {
+      "src": "/(.+\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot|html|wasm|map))$",
+      "dest": "/frontend/build/web/$1"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/frontend/build/web/assets/$1"
+    },
+    {
+      "src": "/icons/(.*)",
+      "dest": "/frontend/build/web/icons/$1"
+    },
+    {
+      "src": "/canvaskit/(.*)",
+      "dest": "/frontend/build/web/canvaskit/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/build/web/$1",
-      "continue": true
-    },
-    {
-      "src": "/(.*)",
-      "dest": "frontend/build/web/index.html"
+      "dest": "/frontend/build/web/index.html"
     }
   ]
 }
