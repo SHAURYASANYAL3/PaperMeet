@@ -1,0 +1,10 @@
+.dart_tool/
+.idea/
+.vscode/
+build/
+!build/web/
+linux/
+windows/
+macos/
+ios/
+android/

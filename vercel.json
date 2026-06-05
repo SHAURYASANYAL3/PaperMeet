@@ -1,39 +1,29 @@
 {
   "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "backend/api/index.ts",
-      "use": "@vercel/node"
+      "source": "/api/(.*)",
+      "destination": "/api/index.ts"
     },
     {
-      "src": "frontend/build/web/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/backend/api/index.ts"
+      "source": "/(.*\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot|wasm|map))$",
+      "destination": "/frontend/build/web/$1"
     },
     {
-      "src": "/(.+\\.(?:js|css|png|jpg|jpeg|gif|svg|ico|json|woff|woff2|ttf|eot|html|wasm|map))$",
-      "dest": "/frontend/build/web/$1"
+      "source": "/assets/(.*)",
+      "destination": "/frontend/build/web/assets/$1"
     },
     {
-      "src": "/assets/(.*)",
-      "dest": "/frontend/build/web/assets/$1"
+      "source": "/icons/(.*)",
+      "destination": "/frontend/build/web/icons/$1"
     },
     {
-      "src": "/icons/(.*)",
-      "dest": "/frontend/build/web/icons/$1"
+      "source": "/canvaskit/(.*)",
+      "destination": "/frontend/build/web/canvaskit/$1"
     },
     {
-      "src": "/canvaskit/(.*)",
-      "dest": "/frontend/build/web/canvaskit/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/build/web/index.html"
+      "source": "/(.*)",
+      "destination": "/frontend/build/web/index.html"
     }
   ]
 }
